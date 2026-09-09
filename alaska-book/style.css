@@ -1,0 +1,103 @@
+/* ============================================================
+   Alaska by Land & Sea — print interior stylesheet (6x9, B&W on cream)
+   Edit freely. Rebuild the PDF with:  python3 build.py
+   ============================================================ */
+
+/* ---- embeddable fonts (open licence) ---- */
+@font-face { font-family:'BookSerif'; src:url('fonts/Gelasio-Regular.ttf');       font-weight:400; font-style:normal; }
+@font-face { font-family:'BookSerif'; src:url('fonts/Gelasio-Bold.ttf');          font-weight:700; font-style:normal; }
+@font-face { font-family:'BookSerif'; src:url('fonts/Gelasio-Italic-s.ttf');      font-weight:400; font-style:italic; }
+@font-face { font-family:'BookSerif'; src:url('fonts/Gelasio-BoldItalic-s.ttf');  font-weight:700; font-style:italic; }
+@font-face { font-family:'Head';      src:url('fonts/Archivo-SemiBold.ttf');      font-weight:600; }
+@font-face { font-family:'Head';      src:url('fonts/Archivo-Bold.ttf');          font-weight:700; }
+@font-face { font-family:'HeadBlack'; src:url('fonts/ArchivoBlack.ttf');          font-weight:900; }
+
+/* ---- page: 6x9, cream, running head + page number ---- */
+@page {
+  size: 6in 9in;
+  margin: 0.75in 0.55in 0.7in 0.75in;      /* inside gutter 0.75, outside 0.55 */
+  background: #F7F3EA;
+  @top-center    { content: string(runhead); font-family:'Head'; font-weight:600; font-size:7.5pt;
+                   letter-spacing:0.16em; text-transform:uppercase; color:#555; padding-top:0.3in; }
+  @bottom-center { content: counter(page); font-family:'Head'; font-size:9pt; color:#333; padding-bottom:0.3in; }
+}
+@page front  { @top-center{content:none;} @bottom-center{content:none;} }
+@page :blank { @top-center{content:none;} @bottom-center{content:none;} }
+
+html { background:#F7F3EA; }
+body { font-family:'BookSerif', Georgia, serif; font-size:11pt; line-height:16pt; color:#141414; margin:0; hyphens:auto; }
+p { margin:0 0 0.5em; text-align:justify; }
+strong { font-weight:700; }
+em { font-style:italic; }
+code { font-family:'Head'; font-size:9pt; }
+
+/* runhead = the current chapter/section title */
+.chapter h2 { string-set: runhead content(); }
+
+/* ---- front matter (no page numbers) ---- */
+.titlepage, .copyright, .toc { page: front; }
+.titlepage { page-break-after: always; text-align:center; padding-top:1.7in; }
+.titlepage .eyebrow { font-family:'Head'; font-weight:600; text-transform:uppercase; letter-spacing:0.3em; font-size:8.5pt; color:#333; margin-bottom:0.35in; }
+.titlepage h1 { font-family:'HeadBlack'; font-size:33pt; line-height:1.0; margin:0 0 0.12in; text-transform:uppercase; }
+.titlepage .series { font-family:'HeadBlack'; letter-spacing:0.06em; font-size:12pt; text-transform:uppercase; margin-bottom:0.3in; }
+.titlepage .trule { width:2.1in; height:2px; background:#111; margin:0.22in auto; }
+.titlepage .fmt { font-family:'Head'; letter-spacing:0.26em; text-transform:uppercase; font-size:9pt; color:#333; }
+.titlepage .author { font-family:'Head'; letter-spacing:0.24em; text-transform:uppercase; font-size:10pt; margin-top:2.2in; }
+
+.copyright { page-break-after: always; font-size:8.6pt; line-height:1.5; padding-top:3.4in; }
+.copyright p { text-align:left; margin:0 0 0.14in; color:#333; }
+.copyright .cw { font-family:'Head'; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#111; }
+.copyright .cw2 { font-family:'Head'; font-weight:600; text-transform:uppercase; letter-spacing:0.14em; font-size:7.5pt; color:#111; margin-top:0.18in; }
+.copyright .csmall { font-size:8pt; color:#666; margin-top:0.2in; }
+
+/* ---- contents ---- */
+.toc { page-break-after: always; }
+.tocrow a { display:flex; justify-content:space-between; align-items:baseline; text-decoration:none; color:#141414;
+  border-bottom:0.5px solid #d8cdb6; padding:5.5pt 0; }
+.tocrow .tt { font-family:'BookSerif'; font-size:10.5pt; }
+.tocrow a::after { content: target-counter(attr(href url), page); font-family:'Head'; font-size:9.5pt; color:#333; padding-left:8pt; }
+
+/* ---- chapter openers ---- */
+.chapter { page-break-before: always; }
+.opener { page-break-after: avoid; padding-top:0.1in; }
+.opener .tabrow { margin-bottom:0.16in; }
+.opener .tab { font-family:'Head'; font-weight:700; text-transform:uppercase; letter-spacing:0.2em; font-size:8pt; color:#111; border:1.4px solid #111; padding:2.5pt 9pt; }
+.opener .num { font-family:'HeadBlack'; font-size:60pt; line-height:0.82; color:#111; margin:0; }
+.opener h2 { font-family:'Head'; font-weight:700; font-size:21pt; line-height:1.05; margin:0.04in 0 0.06in; color:#111; }
+.opener h2.small { font-size:18pt; }
+.opener h2.noNum { margin-top:0; }
+.opener .hr { height:1.5px; background:#111; width:100%; margin:0.1in 0 0.02in; }
+
+h3 { font-family:'Head'; font-weight:700; font-size:11.5pt; color:#111; margin:0.26in 0 0.05in; page-break-after:avoid; }
+
+/* first paragraph of a prose chapter = lead; second = drop cap */
+p.lead { font-size:12pt; line-height:1.42; text-align:left; margin-bottom:0.12in; }
+p.lead strong { font-weight:700; }
+/* drop cap: a real element (.dropcap), not ::first-letter -- WeasyPrint's
+   float layout for ::first-letter pseudo-elements does not reliably
+   reserve space for the glyph, so the line after it can render overlapping
+   the letter instead of wrapping around it. An explicit floated span lays
+   out through the same, more reliable code path as any other float. */
+p.drop .dropcap { font-family:'HeadBlack'; font-size:30pt; line-height:0.8; float:left; padding:3pt 7pt 0 0; margin-top:2pt; color:#111; }
+
+/* ---- mistake callout ---- */
+.callout { background:#111; color:#F7F3EA; padding:9pt 12pt; margin:0.16in 0; page-break-inside:avoid; }
+.callout .lab { font-family:'Head'; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; font-size:7.5pt; display:block; margin-bottom:4pt; color:#fff; }
+.callout p { margin:0; font-style:italic; text-align:left; color:#F7F3EA; }
+
+/* ---- reference lists ---- */
+ul { margin:0 0 0.5em; padding-left:1.1em; }
+li { margin:0 0 3pt; text-align:left; }
+
+/* ---- bonus-pack QR code (back matter) ---- */
+.qrblock { text-align:center; margin:0.14in 0; }
+.qrblock img { width:1.3in; height:1.3in; margin:0 auto; border:1px solid #222; }
+.qrblock span { display:block; font-family:'Head'; font-weight:600; font-size:8pt; letter-spacing:0.08em; text-transform:uppercase; color:#333; margin-top:5pt; }
+
+/* ---- maps (external PNG in images/) ---- */
+figure.map { margin:0.18in 0; page-break-inside:avoid; text-align:center; }
+figure.map .frame { border:1px solid #222; background:#fff; }
+figure.map .caphead { background:#111; color:#F7F3EA; font-family:'Head'; font-weight:600; font-size:7pt; letter-spacing:0.12em; padding:4pt 8pt; display:flex; justify-content:space-between; }
+figure.map .art { padding:8pt; }
+figure.map .art img { display:block; margin:0 auto; max-width:100%; max-height:5.3in; }
+figure.map figcaption { font-style:italic; font-size:8.5pt; color:#333; margin-top:5pt; text-align:center; }

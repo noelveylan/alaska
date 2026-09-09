@@ -1,0 +1,5 @@
+weasyprint>=60
+matplotlib>=3.7
+ebooklib>=0.18
+pypdf>=4.0
+cairosvg>=2.7
